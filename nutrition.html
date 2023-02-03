@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutrition Searcher</title>
+    <style>
+        td {
+            border-bottom: 1px solid #ccc;
+            border-left: 1px solid #ccc;
+        }
+
+        h1 {
+            position: relative;
+            line-height: 1.4;
+            padding: 0.25em 1em;
+            display: inline-block;
+            top: 0;
+            text-align: center;
+        }
+
+        h1:before,
+        h1:after {
+            position: absolute;
+            top: 0;
+            content: '';
+            width: 8px;
+            height: 100%;
+            display: inline-block;
+        }
+
+        h1:before {
+            border-left: solid 1px black;
+            border-top: solid 1px black;
+            border-bottom: solid 1px black;
+            left: 0;
+        }
+
+        h1:after {
+            content: '';
+            border-top: solid 1px black;
+            border-right: solid 1px black;
+            border-bottom: solid 1px black;
+            right: 0;
+        }
+
+        .center {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Nutrition</h1>
+    <div>
+        <input type="text" id="key">
+        <button id="send">search</button>
+    </div>
+    <div>
+        <table id="list">
+            <tr>
+                <td style="width: 400px;">Name</td>
+                <td style="width: 400px;">Calories</td>
+                <td style="width: 500px;">Ingredient</td>
+                <td style="width: 200px;">CuisineType</td>
+                <td style="width: 200px;">dietLabels</td>
+                <td style="width: 400px;">image</td>
+            </tr>
+        </table>
+    </div>
+    
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $("#send").on("click", function () {
+            const url = "https://edamam-recipe-search.p.rapidapi.com/search?q=" + $("#key").val();
+            $.ajax({
+                url: url,
+                dataType: 'json',
+                method: 'GET',
+                headers: {
+                    "X-RapidAPI-Key": "f89cce19a7msh2175fd0502c9bb1p144e8cjsn024765e8446d",
+                    "X-RapidAPI-Host": "edamam-recipe-search.p.rapidapi.com"
+                }
+            }).done(function (data) {
+                //label,calories,ingredientsLines,digest
+                console.log(data);
+                const len = data.hits.length;
+                let html;
+                for (let i = 0; i < len; i++) {
+                    html += `
+                <tr>
+                    <td>${data.hits[i].recipe.label}</td>
+                    <td>${data.hits[i].recipe.calories}</td>
+                    <td>${data.hits[i].recipe.ingredientLines}</td>
+                    <td>${data.hits[i].recipe.cuisineType}</td>
+                    <td>${data.hits[i].recipe.dietLabels}</td>
+                    <td>
+                        <a  target="_blank" href="${data.hits[i].recipe.url}">
+                        <img src="${data.hits[i].recipe.image}">
+                        <a>
+                    </td>
+                </tr>
+                `;
+                }
+                //table要素のid""list"に追加
+                $("#list").empty(html).hide().append(html).fadeIn(1000);
+            });
+        });
+
+
+    </script>
+</body>
+
+</html>
